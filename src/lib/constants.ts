@@ -1,4 +1,4 @@
-import { type AccountAssociation } from '@farcaster/miniapp-core/src/manifest';
+import { type AccountAssociation } from "@farcaster/miniapp-core/src/manifest";
 
 /**
  * Application constants and configuration values.
@@ -22,25 +22,26 @@ export const APP_URL: string = process.env.NEXT_PUBLIC_URL!;
  * The name of the mini app as displayed to users.
  * Used in titles, headers, and app store listings.
  */
-export const APP_NAME: string = 'MrError';
+export const APP_NAME: string = "MrError";
 
 /**
  * A brief description of the mini app's functionality.
  * Used in app store listings and metadata.
  */
-export const APP_DESCRIPTION: string = 'A Farcaster mini app created with Neynar';
+export const APP_DESCRIPTION: string =
+  "A Farcaster mini app created by Mr Hujaifa";
 
 /**
  * The primary category for the mini app.
  * Used for app store categorization and discovery.
  */
-export const APP_PRIMARY_CATEGORY: string = 'developer-tools';
+export const APP_PRIMARY_CATEGORY: string = "developer-tools";
 
 /**
  * Tags associated with the mini app.
  * Used for search and discovery in app stores.
  */
-export const APP_TAGS: string[] = ['crypto', 'gammer'];
+export const APP_TAGS: string[] = ["crypto", "gammer"];
 
 // --- Asset URLs ---
 /**
@@ -65,22 +66,27 @@ export const APP_SPLASH_URL: string = `${APP_URL}/splash.png`;
  * Background color for the splash screen.
  * Used as fallback when splash image is loading.
  */
-export const APP_SPLASH_BACKGROUND_COLOR: string = '#f7f7f7';
+export const APP_SPLASH_BACKGROUND_COLOR: string = "#f7f7f7";
 
 /**
  * Account association for the mini app.
  * Used to associate the mini app with a Farcaster account.
  * If not provided, the mini app will be unsigned and have limited capabilities.
  */
-export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined =
-  undefined;
+export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = {
+  header:
+    "eyJmaWQiOjI2Mzg4MywidHlwZSI6ImF1dGgiLCJrZXkiOiIweDQwYTE0ZGEyZEVGRDdBMjEzNUQ2RjdFZTU0OTkyNjYyM2Y5NDE5OTkifQ",
+  payload: "eyJkb21haW4iOiJmYXJjZXN0ZXItbWluaS1hcHAtMS52ZXJjZWwuYXBwIn0",
+  signature:
+    "Y0ICziLrQrQXV65Z1LiFrq1LDQ1MRm91uTS/1Mxt7fthC34qedv5m/YhqWsK7yjUlAqCv7Ugif0Z/wZgramRyBs=",
+};
 
 // --- UI Configuration ---
 /**
  * Text displayed on the main action button.
  * Used for the primary call-to-action in the mini app.
  */
-export const APP_BUTTON_TEXT: string = 'Launch Mini App';
+export const APP_BUTTON_TEXT: string = "Launch Mini App";
 
 // --- Integration Configuration ---
 /**
@@ -135,16 +141,16 @@ export const RETURN_URL: string | undefined = undefined;
 
 // PLEASE DO NOT UPDATE THIS
 export const SIGNED_KEY_REQUEST_VALIDATOR_EIP_712_DOMAIN = {
-  name: 'Farcaster SignedKeyRequestValidator',
-  version: '1',
+  name: "Farcaster SignedKeyRequestValidator",
+  version: "1",
   chainId: 10,
   verifyingContract:
-    '0x00000000fc700472606ed4fa22623acf62c60553' as `0x${string}`,
+    "0x00000000fc700472606ed4fa22623acf62c60553" as `0x${string}`,
 };
 
 // PLEASE DO NOT UPDATE THIS
 export const SIGNED_KEY_REQUEST_TYPE = [
-  { name: 'requestFid', type: 'uint256' },
-  { name: 'key', type: 'bytes' },
-  { name: 'deadline', type: 'uint256' },
+  { name: "requestFid", type: "uint256" },
+  { name: "key", type: "bytes" },
+  { name: "deadline", type: "uint256" },
 ];
