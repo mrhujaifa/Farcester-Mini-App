@@ -17,31 +17,24 @@ import { type AccountAssociation } from "@farcaster/miniapp-core/src/manifest";
  * Used for generating absolute URLs for assets and API endpoints.
  */
 export const APP_URL: string = process.env.NEXT_PUBLIC_URL!;
+export const APP_NAME: string = "Farcaster Daily XP";
 
-/**
- * The name of the mini app as displayed to users.
- * Used in titles, headers, and app store listings.
- */
-export const APP_NAME: string = "MrError";
-
-/**
- * A brief description of the mini app's functionality.
- * Used in app store listings and metadata.
- */
 export const APP_DESCRIPTION: string =
-  "A Farcaster mini app created by Mr Hujaifa";
+  "Farcaster Daily XP helps you claim daily gas-free XP rewards, earn badges, and level up your social profile seamlessly on Farcaster.";
 
-/**
- * The primary category for the mini app.
- * Used for app store categorization and discovery.
- */
-export const APP_PRIMARY_CATEGORY: string = "developer-tools";
+export const APP_PRIMARY_CATEGORY: string = "social-rewards";
 
-/**
- * Tags associated with the mini app.
- * Used for search and discovery in app stores.
- */
-export const APP_TAGS: string[] = ["crypto", "gammer"];
+export const APP_TAGS: string[] = [
+  "farcaster",
+  "daily-rewards",
+  "xp",
+  "gasless",
+  "nft",
+  "blockchain",
+  "social",
+  "crypto",
+  "community",
+];
 
 // --- Asset URLs ---
 /**
