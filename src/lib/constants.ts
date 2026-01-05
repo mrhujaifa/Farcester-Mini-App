@@ -17,10 +17,10 @@ import { type AccountAssociation } from "@farcaster/miniapp-core/src/manifest";
  * Used for generating absolute URLs for assets and API endpoints.
  */
 export const APP_URL: string = process.env.NEXT_PUBLIC_URL!;
-export const APP_NAME: string = "Farcaster Daily XP";
+export const APP_NAME: string = "FarRewards";
 
 export const APP_DESCRIPTION: string =
-  "Farcaster Daily XP helps you claim daily gas-free XP rewards, earn badges, and level up your social profile seamlessly on Farcaster.";
+  "FarRewards helps you claim daily gas-free XP rewards, earn badges, and level up your social profile seamlessly on Farcaster.";
 
 export const APP_PRIMARY_CATEGORY: string = "social-rewards";
 
@@ -79,7 +79,7 @@ export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = {
  * Text displayed on the main action button.
  * Used for the primary call-to-action in the mini app.
  */
-export const APP_BUTTON_TEXT: string = "Launch Mini App";
+export const APP_BUTTON_TEXT: string = "Launch FarRewards";
 
 // --- Integration Configuration ---
 /**

@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
-import { getSession } from '~/auth';
-import '~/app/globals.css';
-import { Providers } from '~/app/providers';
-import { APP_NAME, APP_DESCRIPTION } from '~/lib/constants';
+import { getSession } from "~/auth";
+import "~/app/globals.css";
+import { Providers } from "~/app/providers";
+import { APP_NAME, APP_DESCRIPTION } from "~/lib/constants";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -18,11 +18,9 @@ export default async function RootLayout({
   const session = await getSession();
 
   return (
-    <html lang="en">
+    <html lang="en" data-theme="synthwave">
       <body>
-        <Providers session={session}>
-          {children}
-        </Providers>
+        <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );
