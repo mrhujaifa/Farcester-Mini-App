@@ -1,11 +1,7 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import {
-  useAccount,
-  useSendTransaction,
-  useWaitForTransactionReceipt,
-} from "wagmi";
+import { useCallback, useMemo, useState } from "react";
+import { useAccount, useWalletClient } from "wagmi";
 import {
   arbitrum,
   base,
@@ -19,54 +15,17 @@ import {
 } from "wagmi/chains";
 import { Button } from "../Button";
 import { truncateAddress } from "../../../lib/truncateAddress";
-import { renderError } from "../../../lib/errorUtils";
 
-/**
- * SendEth component handles sending ETH transactions to protocol guild addresses.
- *
- * This component provides a simple interface for users to send small amounts
- * of ETH to protocol guild addresses. It automatically selects the appropriate
- * recipient address based on the current chain and displays transaction status.
- *
- * Features:
- * - Chain-specific recipient addresses
- * - Transaction status tracking
- * - Error handling and display
- * - Transaction hash display
- *
- * @example
- * ```tsx
- * <SendEth />
- * ```
- */
 export function SendEth() {
   // --- Hooks ---
   const { isConnected, chainId } = useAccount();
-  const {
-    sendTransaction,
-    data: ethTransactionHash,
-    error: ethTransactionError,
-    isError: isEthTransactionError,
-    isPending: isEthTransactionPending,
-  } = useSendTransaction();
+  const { data: walletClient } = useWalletClient();
 
-  const {
-    isLoading: isEthTransactionConfirming,
-    isSuccess: isEthTransactionConfirmed,
-  } = useWaitForTransactionReceipt({
-    hash: ethTransactionHash,
-  });
+  const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  // --- Computed Values ---
-  /**
-   * Determines the recipient address based on the current chain.
-   *
-   * Uses different protocol guild addresses for different chains.
-   * Defaults to Ethereum mainnet address if chain is not recognized.
-   * Addresses are taken from the protocol guilds documentation: https://protocol-guild.readthedocs.io/en/latest/
-   *
-   * @returns string - The recipient address for the current chain
-   */
+  // --- Recipient address by chain ---
   const protocolGuildRecipientAddress = useMemo(() => {
     switch (chainId) {
       case mainnet.id:
@@ -88,47 +47,51 @@ export function SendEth() {
       case zora.id:
         return "0x32e3C7fD24e175701A35c224f2238d18439C7dBC";
       default:
-        // Default to Ethereum mainnet address
         return "0x25941dC771bB64514Fc8abBce970307Fb9d477e9";
     }
   }, [chainId]);
 
-  // --- Handlers ---
-  /**
-   
-   * This function sends a small amount of ETH (1 wei) to the protocol guild
-   * address for the current chain. The transaction is sent using the wagmi
-   * sendTransaction hook.
-   */
-  const sendEthTransaction = useCallback(() => {
-    sendTransaction({
-      to: protocolGuildRecipientAddress,
-      value: 1n,
-    });
-  }, [protocolGuildRecipientAddress, sendTransaction]);
+  // --- Send ETH ---
+  const sendEthTransaction = useCallback(async () => {
+    if (!walletClient || !isConnected || !chainId) return;
+
+    try {
+      setIsPending(true);
+      setError(null);
+
+      const hash = await walletClient.sendTransaction({
+        to: protocolGuildRecipientAddress,
+        value: 10_000_000_000_000n, // 0.00001 ETH (safe for UX)
+        chain: walletClient.chain,
+      });
+
+      setTxHash(hash);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setIsPending(false);
+    }
+  }, [walletClient, isConnected, chainId, protocolGuildRecipientAddress]);
 
   // --- Render ---
   return (
     <>
       <Button
         onClick={sendEthTransaction}
-        disabled={!isConnected || isEthTransactionPending}
-        isLoading={isEthTransactionPending}
+        disabled={!isConnected || isPending}
+        isLoading={isPending}
       >
-        Send Transaction (eth)
+        Send ETH
       </Button>
-      {isEthTransactionError && renderError(ethTransactionError)}
-      {ethTransactionHash && (
+
+      {error && (
+        <div className="mt-2 text-xs text-red-500">{error.message}</div>
+      )}
+
+      {txHash && (
         <div className="mt-2 text-xs">
-          <div>Hash: {truncateAddress(ethTransactionHash)}</div>
-          <div>
-            Status:{" "}
-            {isEthTransactionConfirming
-              ? "Confirming..."
-              : isEthTransactionConfirmed
-              ? "Confirmed!"
-              : "Pending"}
-          </div>
+          <div>Hash: {truncateAddress(txHash)}</div>
+          <div>Status: Submitted</div>
         </div>
       )}
     </>
