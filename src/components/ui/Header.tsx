@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { APP_NAME } from "~/lib/constants";
 import { useMiniApp } from "@neynar/react";
 import Image from "next/image";
