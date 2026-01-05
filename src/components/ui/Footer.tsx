@@ -1,11 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Home, PlusCircle, Trophy, Gift, User } from "lucide-react";
+import { Home, PlusCircle, Trophy, Gift } from "lucide-react";
 import { Tab } from "~/components/App";
 
 interface FooterProps {
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
+  showWallet: boolean;
 }
 
 export const Footer: React.FC<FooterProps> = ({ activeTab, setActiveTab }) => {
@@ -14,7 +15,7 @@ export const Footer: React.FC<FooterProps> = ({ activeTab, setActiveTab }) => {
     { id: Tab.Actions, label: "Actions", icon: PlusCircle },
     { id: Tab.Context, label: "Ranks", icon: Trophy },
     { id: Tab.Wallet, label: "Airdrop", icon: Gift },
-    { id: Tab.Profile, label: "Profile", icon: User },
+    // { id: Tab.Profile, label: "Profile", icon: User },
   ];
 
   return (
