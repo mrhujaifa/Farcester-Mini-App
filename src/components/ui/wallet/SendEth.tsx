@@ -1,25 +1,39 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
-import { arbitrum, base, mainnet, optimism, polygon, scroll, shape, zkSync, zora } from "wagmi/chains";
+import {
+  useAccount,
+  useSendTransaction,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import {
+  arbitrum,
+  base,
+  mainnet,
+  optimism,
+  polygon,
+  scroll,
+  shape,
+  zkSync,
+  zora,
+} from "wagmi/chains";
 import { Button } from "../Button";
 import { truncateAddress } from "../../../lib/truncateAddress";
 import { renderError } from "../../../lib/errorUtils";
 
 /**
  * SendEth component handles sending ETH transactions to protocol guild addresses.
- * 
+ *
  * This component provides a simple interface for users to send small amounts
  * of ETH to protocol guild addresses. It automatically selects the appropriate
  * recipient address based on the current chain and displays transaction status.
- * 
+ *
  * Features:
  * - Chain-specific recipient addresses
  * - Transaction status tracking
  * - Error handling and display
  * - Transaction hash display
- * 
+ *
  * @example
  * ```tsx
  * <SendEth />
@@ -36,10 +50,12 @@ export function SendEth() {
     isPending: isEthTransactionPending,
   } = useSendTransaction();
 
-  const { isLoading: isEthTransactionConfirming, isSuccess: isEthTransactionConfirmed } =
-    useWaitForTransactionReceipt({
-      hash: ethTransactionHash,
-    });
+  const {
+    isLoading: isEthTransactionConfirming,
+    isSuccess: isEthTransactionConfirmed,
+  } = useWaitForTransactionReceipt({
+    hash: ethTransactionHash,
+  });
 
   // --- Computed Values ---
   /**
@@ -80,7 +96,7 @@ export function SendEth() {
   // --- Handlers ---
   /**
    * Handles sending the ETH transaction.
-   * 
+   *
    * This function sends a small amount of ETH (1 wei) to the protocol guild
    * address for the current chain. The transaction is sent using the wagmi
    * sendTransaction hook.
@@ -118,4 +134,4 @@ export function SendEth() {
       )}
     </>
   );
-} 
+}
