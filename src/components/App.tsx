@@ -12,7 +12,6 @@ import {
 } from "~/components/ui/tabs";
 import { USE_WALLET } from "~/lib/constants";
 import { useNeynarUser } from "../hooks/useNeynarUser";
-import Navbar from "./ui/Navbar/Header";
 
 // --- Types ---
 export enum Tab {
@@ -55,9 +54,7 @@ export interface AppProps {
  * <App title="My Mini App" />
  * ```
  */
-export default function App(
-  { title }: AppProps = { title: "Neynar Starter Kit" }
-) {
+export default function App({ title }: AppProps = { title: "FarRewards" }) {
   // --- Hooks ---
   const { isSDKLoaded, context, setInitialTab, setActiveTab, currentTab } =
     useMiniApp();
