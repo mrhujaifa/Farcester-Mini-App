@@ -113,7 +113,7 @@ export default function PrizeCardUI() {
 
   /* ---------------- AFTER TX CONFIRM ---------------- */
   useEffect(() => {
-    if (!isConfirmed || !hash || !address || hasUserEntered) return;
+    // if (!isConfirmed || !hash || !address || hasUserEntered) return;
 
     fetch("/api/raffle/enter", {
       method: "POST",
