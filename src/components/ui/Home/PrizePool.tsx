@@ -12,10 +12,54 @@ import {
   Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useContractRead,
+} from "wagmi";
 
 export default function PrizeCardUI() {
-  // ১. ট্রানজেকশন পাঠানোর হুক
+  const contractAddress = "0x6f9FBA04733ff91De596dC5fb64034ee9c2eF7f2";
+
+  const abi = [
+    {
+      name: "enterRaffle",
+      type: "function",
+      stateMutability: "nonpayable",
+      inputs: [],
+      outputs: [],
+    },
+    {
+      name: "getEntryCount",
+      type: "function",
+      stateMutability: "view",
+      inputs: [],
+      outputs: [{ type: "uint256" }],
+    },
+    {
+      name: "getMaxEntries",
+      type: "function",
+      stateMutability: "view",
+      inputs: [],
+      outputs: [{ type: "uint256" }],
+    },
+    {
+      name: "getPrizeAmount",
+      type: "function",
+      stateMutability: "view",
+      inputs: [],
+      outputs: [{ type: "uint256" }],
+    },
+    {
+      name: "getPrizeUSDValue",
+      type: "function",
+      stateMutability: "view",
+      inputs: [],
+      outputs: [{ type: "uint256" }],
+    },
+  ] as const;
+
+  // ট্রানজেকশন পাঠানোর হুক
   const {
     data: hash,
     error,
@@ -23,26 +67,47 @@ export default function PrizeCardUI() {
     isPending: isSubmitting,
   } = useWriteContract();
 
-  // ২. ট্রানজেকশন কনফার্মেশন চেক করার হুক
+  // ট্রানজেকশন কনফার্মেশন চেক করার হুক
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
     });
 
-  const contractAddress = "0x6f9FBA04733ff91De596dC5fb64034ee9c2eF7f2";
+  // স্মার্ট কন্ট্রাক্ট থেকে ডাটা ফেচ
+  const { data: entriesData } = useContractRead({
+    address: contractAddress,
+    abi: abi,
+    functionName: "getEntryCount",
+  });
 
-  const abi = [
-    {
-      name: "enterRaffle",
-      type: "function",
-      stateMutability: "nonpayable", // বা ফি থাকলে 'payable'
-      inputs: [],
-      outputs: [],
-    },
-  ] as const;
+  const { data: maxEntriesData } = useContractRead({
+    address: contractAddress,
+    abi: abi,
+    functionName: "getMaxEntries",
+  });
+
+  const { data: prizeAmountData } = useContractRead({
+    address: contractAddress,
+    abi: abi,
+    functionName: "getPrizeAmount",
+  });
+
+  const { data: prizeUSDValueData } = useContractRead({
+    address: contractAddress,
+    abi: abi,
+    functionName: "getPrizeUSDValue",
+  });
+
+  // ডাটা প্রসেসিং
+  const entries = entriesData ? Number(entriesData) : 0;
+  const maxEntries = maxEntriesData ? Number(maxEntriesData) : 100;
+  const prizeAmount = prizeAmountData ? Number(prizeAmountData) : 20000;
+  const prizeUSDValue = prizeUSDValueData
+    ? Number(prizeUSDValueData) / 100
+    : 20;
 
   const handleWinNow = useCallback(() => {
-    if (isConfirmed) return; // একবার জয়েন করলে আর কাজ করবে না
+    if (isConfirmed) return;
 
     writeContract({
       address: contractAddress as `0x${string}`,
@@ -52,7 +117,7 @@ export default function PrizeCardUI() {
   }, [isConfirmed, writeContract]);
 
   return (
-    <div className="flex items-center justify-center px-3 bg-[#020408] min-h-screen">
+    <div className="flex items-center justify-center px-3 bg-[#020408]">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -81,6 +146,7 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
+        {/* Entries */}
         <div className="grid grid-cols-2 gap-3 relative z-10">
           <motion.div
             whileHover={{ y: -2 }}
@@ -95,18 +161,21 @@ export default function PrizeCardUI() {
               </span>
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black text-white">2</span>
-              <span className="text-xs text-gray-600 font-bold">/ 100</span>
+              <span className="text-2xl font-black text-white">{entries}</span>
+              <span className="text-xs text-gray-600 font-bold">
+                / {maxEntries}
+              </span>
             </div>
             <div className="mt-3 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: "51%" }}
+                animate={{ width: `${(entries / maxEntries) * 100}%` }}
                 className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 shadow-[0_0_10px_rgba(59,130,246,0.4)]"
               />
             </div>
           </motion.div>
 
+          {/* Prize */}
           <motion.div
             whileHover={{ y: -2 }}
             className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 relative overflow-hidden"
@@ -120,17 +189,20 @@ export default function PrizeCardUI() {
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black text-white">20,000</span>
+              <span className="text-2xl font-black text-white">
+                {prizeAmount.toLocaleString()}
+              </span>
               <span className="text-[9px] font-bold text-amber-500 tracking-widest leading-none mt-1">
                 $FR TOKEN
               </span>
               <span className="text-[10px] text-gray-500 mt-1">
-                ≈ $20.00 USDC
+                ≈ ${prizeUSDValue.toFixed(2)} USDC
               </span>
             </div>
           </motion.div>
         </div>
 
+        {/* Distribution */}
         <div className="bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-2xl p-4 relative">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -165,6 +237,7 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
+        {/* Win Now Button */}
         <div className="space-y-4">
           <motion.button
             onClick={handleWinNow}
@@ -173,7 +246,7 @@ export default function PrizeCardUI() {
             className={`group relative w-full py-4 rounded-2xl font-black text-sm tracking-widest transition-all duration-500 overflow-hidden ${
               isConfirmed
                 ? "bg-emerald-500/10 border border-emerald-500/50 text-emerald-500"
-                : "bg-blue-600 hover:bg-blue-500 text-white shadow-[0_10px_30_px_-10px_rgba(37,99,235,0.5)]"
+                : "bg-blue-600 hover:bg-blue-500 text-white shadow-[0_10px_30px_-10px_rgba(37,99,235,0.5)]"
             } disabled:opacity-80 disabled:cursor-not-allowed`}
           >
             <AnimatePresence mode="wait">
@@ -233,7 +306,7 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
-        <div className="absolute w top-0 left-0 w-16 h-16 bg-blue-500/10 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]"></div>
+        <div className="absolute top-0 left-0 w-16 h-16 bg-blue-500/10 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]"></div>
       </motion.div>
     </div>
   );
