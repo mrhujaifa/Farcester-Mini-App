@@ -309,6 +309,7 @@ export default function PrizeCardUI() {
                 </motion.span>
               )}
             </AnimatePresence>
+
             {!hasUserEntered &&
               !isSubmitting &&
               !isConfirming &&

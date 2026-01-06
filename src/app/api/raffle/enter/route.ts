@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 
+const raffleId = "raffle_1"; // তোমার রাফেল আইডি
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -12,8 +14,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    const raffleId = "raffle_1"; // তোমার রাফেল আইডি
 
     // Check if raffle exists
     const raffle = await prisma.raffle.findUnique({
