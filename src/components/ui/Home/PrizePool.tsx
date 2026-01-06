@@ -95,7 +95,7 @@ export default function PrizeCardUI() {
               </span>
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black text-white">51</span>
+              <span className="text-2xl font-black text-white">2</span>
               <span className="text-xs text-gray-600 font-bold">/ 100</span>
             </div>
             <div className="mt-3 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
@@ -233,7 +233,7 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
-        <div className="absolute top-0 left-0 w-16 h-16 bg-blue-500/10 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]"></div>
+        <div className="absolute w top-0 left-0 w-16 h-16 bg-blue-500/10 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]"></div>
       </motion.div>
     </div>
   );
