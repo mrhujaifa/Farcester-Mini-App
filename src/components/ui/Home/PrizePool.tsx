@@ -17,6 +17,7 @@ import {
   useWaitForTransactionReceipt,
   useAccount,
 } from "wagmi";
+import toast from "react-hot-toast";
 
 const MAX_ENTRIES = 100;
 const EVENT_DURATION_MS =
@@ -28,6 +29,14 @@ export default function PrizeCardUI() {
   const [entriesCount, setEntriesCount] = useState(0);
   const [hasUserEntered, setHasUserEntered] = useState(false);
   const [timeLeft, setTimeLeft] = useState(EVENT_DURATION_MS);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [Alldata, setAllData] = useState<{
+    totalCount: number;
+    entries: any[];
+  } | null>(null);
+
+  const [loading, setLoading] = useState(true);
 
   const {
     data: hash,
@@ -51,28 +60,34 @@ export default function PrizeCardUI() {
     },
   ] as const;
 
-  /* ---------------- SERVER STATE LOAD ---------------- */
-  useEffect(() => {
+  // Server state load
+  const loadRaffleState = useCallback(async () => {
     if (!address) return;
 
-    fetch(`/api/raffle/state?address=${address}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setEntriesCount(data.entriesCount);
-        setHasUserEntered(data.hasUserEntered);
-      })
-      .catch(() => {});
+    try {
+      const res = await fetch(`/api/raffle/state?address=${address}`);
+      if (!res.ok) throw new Error("Failed to load raffle state");
+      const data = await res.json();
+      setEntriesCount(data.entriesCount);
+      setHasUserEntered(data.hasUserEntered);
+    } catch {
+      // Ignore or set error if needed
+    }
   }, [address]);
 
-  /* ---------------- TIMER ---------------- */
+  useEffect(() => {
+    loadRaffleState();
+  }, [loadRaffleState]);
+
+  // Timer logic
   useEffect(() => {
     if (timeLeft <= 0) return;
 
-    const i = setInterval(() => {
+    const interval = setInterval(() => {
       setTimeLeft((t) => (t <= 1000 ? 0 : t - 1000));
     }, 1000);
 
-    return () => clearInterval(i);
+    return () => clearInterval(interval);
   }, [timeLeft]);
 
   const formatTimeLeft = () => {
@@ -86,7 +101,52 @@ export default function PrizeCardUI() {
     return `${pad(d)}d : ${pad(h)}h : ${pad(m)}m`;
   };
 
-  /* ---------------- CLICK HANDLER ---------------- */
+  // Handle txn confirmed -> POST to API
+  useEffect(() => {
+    if (!isConfirmed || !hash || !address || hasUserEntered) return;
+
+    const postEntry = async () => {
+      try {
+        const res = await fetch("/api/raffle/enter", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address, txHash: hash }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setErrorMsg(data.error || "Entry failed");
+          setSuccessMsg("");
+          return;
+        }
+
+        await loadRaffleState();
+        setSuccessMsg(
+          "Congratulations! You have successfully joined the event."
+        );
+        setErrorMsg("");
+      } catch {
+        setErrorMsg("Network or server error");
+        setSuccessMsg("");
+      }
+    };
+
+    postEntry();
+  }, [isConfirmed, hash, address, hasUserEntered, loadRaffleState]);
+
+  // Wagmi error handling
+  useEffect(() => {
+    if (!error) return;
+
+    if (error.message.includes("User rejected")) {
+      setErrorMsg("Transaction rejected by user");
+    } else {
+      setErrorMsg("Transaction failed");
+    }
+  }, [error]);
+
+  // Button click handler
   const handleWinNow = useCallback(() => {
     if (
       !address ||
@@ -96,6 +156,9 @@ export default function PrizeCardUI() {
       isConfirming
     )
       return;
+
+    setErrorMsg("");
+    setSuccessMsg("");
 
     writeContract({
       address: contractAddress as `0x${string}`,
@@ -111,30 +174,21 @@ export default function PrizeCardUI() {
     writeContract,
   ]);
 
-  /* ---------------- AFTER TX CONFIRM ---------------- */
   useEffect(() => {
-    // if (!isConfirmed || !hash || !address || hasUserEntered) return;
-
-    fetch("/api/raffle/enter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        address,
-        txHash: hash,
-      }),
-    })
-      .then(async (res) => {
-        if (!res.ok) throw new Error();
-
-        const state = await fetch(`/api/raffle/state?address=${address}`).then(
-          (r) => r.json()
-        );
-
-        setEntriesCount(state.entriesCount);
-        setHasUserEntered(state.hasUserEntered);
+    fetch("/api/raffle/enter")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch raffle entries");
+        return res.json();
       })
-      .catch(() => {});
-  }, [isConfirmed, hash, address, hasUserEntered]);
+      .then((alldata) => {
+        setAllData(alldata);
+        setLoading(false);
+      })
+      .catch((err: Error) => {
+        setLoading(false);
+        toast.error(err.message || "Something went wrong");
+      });
+  }, []);
 
   return (
     <div className="flex items-center justify-center px-3 bg-[#020408] min-h-screen">
@@ -181,7 +235,7 @@ export default function PrizeCardUI() {
             </div>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-black text-white">
-                {entriesCount}
+                {Alldata?.totalCount}
               </span>
               <span className="text-xs text-gray-600 font-bold">
                 / {MAX_ENTRIES}
@@ -254,14 +308,26 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
+        {/* Show error or success messages */}
+        {errorMsg && (
+          <p className="text-red-500 text-[10px] text-center mt-2 bg-red-500/10 py-1 rounded-lg border border-red-500/20">
+            {errorMsg}
+          </p>
+        )}
+        {successMsg && (
+          <p className="text-green-600 text-[10px] text-center mt-2 bg-green-500/10 py-1 rounded-lg border border-green-500/20">
+            {successMsg}
+          </p>
+        )}
+
         <div className="space-y-4">
           <motion.button
             onClick={handleWinNow}
             disabled={
               isSubmitting ||
               isConfirming ||
-              hasUserEntered ||
-              entriesCount >= MAX_ENTRIES
+              entriesCount >= MAX_ENTRIES ||
+              hasUserEntered
             }
             whileTap={{ scale: 0.95 }}
             className={`group relative w-full py-4 rounded-2xl font-black text-sm tracking-widest transition-all duration-500 overflow-hidden ${

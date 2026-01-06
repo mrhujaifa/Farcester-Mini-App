@@ -234,7 +234,7 @@ export type RaffleEntryCreateInput = {
   address: string
   txHash: string
   createdAt?: Date | string
-  raffle?: Prisma.RaffleCreateNestedOneWithoutEntriesInput
+  raffle: Prisma.RaffleCreateNestedOneWithoutEntriesInput
 }
 
 export type RaffleEntryUncheckedCreateInput = {
@@ -242,7 +242,7 @@ export type RaffleEntryUncheckedCreateInput = {
   address: string
   txHash: string
   createdAt?: Date | string
-  raffleId?: string
+  raffleId: string
 }
 
 export type RaffleEntryUpdateInput = {
@@ -266,7 +266,7 @@ export type RaffleEntryCreateManyInput = {
   address: string
   txHash: string
   createdAt?: Date | string
-  raffleId?: string
+  raffleId: string
 }
 
 export type RaffleEntryUpdateManyMutationInput = {

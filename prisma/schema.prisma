@@ -10,7 +10,7 @@ generator client {
 }
 
 model Raffle {
-  id           String   @id @default("main")
+  id           String   @id @default(cuid())  // ডাইনামিক ইউনিক আইডি
   entriesCount Int      @default(0)
   maxEntries   Int      @default(100)
   createdAt    DateTime @default(now())
@@ -25,10 +25,10 @@ model RaffleEntry {
   txHash    String   @unique
   createdAt DateTime @default(now())
 
-  raffleId  String   @default("main")
+  raffleId  String
   raffle    Raffle   @relation(fields: [raffleId], references: [id])
 
-  @@unique([address, raffleId]) 
+  @@unique([address, raffleId])
   @@index([address])
 }
 
