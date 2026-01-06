@@ -10,6 +10,7 @@ import {
   Zap,
   ShieldCheck,
   Loader2,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -41,6 +42,19 @@ export default function PrizeCardUI() {
 
   const [loading, setLoading] = useState(true);
 
+  // State for showing/hiding rules popup
+  const [showRules, setShowRules] = useState(false);
+
+  const raffleRules = [
+    "Each wallet can enter only once.",
+    "Maximum 100 entries allowed in total.",
+    "Winners will be selected randomly after event ends.",
+    "Prize is 20,000 $FR",
+    "Top 10 winners share the prize equally.",
+    "The price of Future $FR  is tied to the market value of Ethereum (ETH).",
+    "More $FR more rewards",
+  ];
+
   const {
     data: hash,
     error,
@@ -63,7 +77,6 @@ export default function PrizeCardUI() {
     },
   ] as const;
 
-  // Server state load
   const loadRaffleState = useCallback(async () => {
     if (!address) return;
 
@@ -82,7 +95,6 @@ export default function PrizeCardUI() {
     loadRaffleState();
   }, [loadRaffleState]);
 
-  // Timer logic
   useEffect(() => {
     if (timeLeft <= 0) return;
 
@@ -104,7 +116,6 @@ export default function PrizeCardUI() {
     return `${pad(d)}d : ${pad(h)}h : ${pad(m)}m`;
   };
 
-  // Handle txn confirmed -> POST to API
   useEffect(() => {
     if (!isConfirmed || !hash || !address || hasUserEntered) return;
 
@@ -138,7 +149,6 @@ export default function PrizeCardUI() {
     postEntry();
   }, [isConfirmed, hash, address, hasUserEntered, loadRaffleState]);
 
-  // Wagmi error handling
   useEffect(() => {
     if (!error) return;
 
@@ -149,7 +159,6 @@ export default function PrizeCardUI() {
     }
   }, [error]);
 
-  // Button click handler
   const handleWinNow = useCallback(() => {
     if (
       !address ||
@@ -215,9 +224,11 @@ export default function PrizeCardUI() {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-sm w-full p-5 space-y-6 bg-[#05080f]/80 backdrop-blur-xl rounded-[15px] border border-white/10 shadow-[0_0_50px_-12px_rgba(59,130,246,0.3)] relative overflow-hidden"
       >
+        {/* Background Blur Circles */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 blur-[60px] rounded-full animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full"></div>
 
+        {/* Header */}
         <div className="flex justify-between items-center relative z-10">
           <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-1.5">
             <Zap size={12} className="text-blue-400 fill-blue-400" />
@@ -246,6 +257,7 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
+        {/* Info & Prize Cards */}
         <div className="grid grid-cols-2 gap-3 relative z-10">
           <motion.div
             whileHover={{ y: -2 }}
@@ -304,6 +316,7 @@ export default function PrizeCardUI() {
           </motion.div>
         </div>
 
+        {/* Distribution */}
         <div className="bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-2xl p-4 relative">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -338,7 +351,7 @@ export default function PrizeCardUI() {
           </div>
         </div>
 
-        {/* Show error or success messages */}
+        {/* Error & Success Messages */}
         {errorMsg && (
           <p className="text-red-500 text-[10px] text-center mt-2 bg-red-500/10 py-1 rounded-lg border border-red-500/20">
             {errorMsg}
@@ -422,6 +435,7 @@ export default function PrizeCardUI() {
             </p>
           )}
 
+          {/* Time Left + View Rules Button */}
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-tighter">
               <div className="flex items-center gap-1 text-red-400">
@@ -429,11 +443,57 @@ export default function PrizeCardUI() {
                 {formatTimeLeft()}
               </div>
               <div className="w-1 h-1 bg-white/10 rounded-full" />
-              <button className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1">
+
+              {/* View Rules Button */}
+              <button
+                onClick={() => setShowRules(true)}
+                className="text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-1"
+              >
                 <Info size={10} /> View Rules
               </button>
             </div>
           </div>
+
+          {/* Rules Popup */}
+          <AnimatePresence>
+            {showRules && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm"
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-[#05080f]/95 border border-white/20 rounded-lg max-w-sm w-full p-6 relative shadow-lg"
+                >
+                  {/* Close button */}
+                  <button
+                    onClick={() => setShowRules(false)}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
+                    aria-label="Close Rules Popup"
+                  >
+                    <X size={20} />
+                  </button>
+
+                  {/* Title */}
+                  <h2 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
+                    <Info size={20} className="text-blue-400" /> Raffle Rules
+                  </h2>
+
+                  {/* Rules List */}
+                  <ul className="text-gray-300 text-sm space-y-2 max-h-60 overflow-y-auto list-disc list-inside">
+                    {raffleRules.map((rule, i) => (
+                      <li key={i}>{rule}</li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="absolute top-0 left-0 w-16 h-16 bg-blue-500/10 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]"></div>
