@@ -93,7 +93,7 @@
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.8",
-    "@types/node": "^20",
+    "@types/node": "^25",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
