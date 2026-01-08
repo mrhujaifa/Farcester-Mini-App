@@ -594,7 +594,7 @@ export default function PremiumVaultPage() {
   };
 
   return (
-    <div className="h-[80dvh] w-full flex flex-col items-center justify-between overflow-hidden font-mono selection:bg-cyan-500 relative bg-[#02040a]">
+    <div className="h-[80dvh] w-full flex flex-col items-center justify-between overflow-hidden font-mono selection:bg-cyan-500 relative ">
       {toast && (
         <Toast
           message={toast.message}
