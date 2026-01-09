@@ -125,9 +125,7 @@ export function ActionsTab() {
 
   // --- Render ---
   return (
-    <div>
-      <ComingSoon></ComingSoon>
-    </div>
+    <div>{/* <ComingSoon></ComingSoon> */}</div>
     // <div className="space-y-3 px-6 w-full ">
     //   {/* Share functionality */}
     //   <ShareButton

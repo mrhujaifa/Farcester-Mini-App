@@ -27,6 +27,118 @@ const MAX_ENTRIES = 100;
 const EVENT_DURATION_MS =
   2 * 24 * 60 * 60 * 1000 + 14 * 60 * 60 * 1000 + 30 * 60 * 1000;
 
+/**
+ * কাস্টম স্কেলিটন কম্পোনেন্ট - যা আপনার অরিজিনাল UI এর লেআউটকে হুবহু নকল করে
+ */
+const RaffleSkeleton = () => (
+  <div className="max-w-sm w-full p-5 space-y-6 bg-[#05080f]/80 backdrop-blur-xl rounded-[15px] border border-white/10 relative overflow-hidden mx-auto">
+    {/* Header Skeleton */}
+    <div className="flex justify-between items-center">
+      <Skeleton
+        variant="rounded"
+        width={110}
+        height={24}
+        sx={{ bgcolor: "rgba(255,255,255,0.05)", borderRadius: "999px" }}
+      />
+      <div className="flex -space-x-2">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton
+            key={i}
+            variant="circular"
+            width={24}
+            height={24}
+            sx={{
+              bgcolor: "rgba(255,255,255,0.08)",
+              border: "2px solid #05080f",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+
+    {/* Grid Skeleton */}
+    <div className="grid grid-cols-2 gap-3">
+      {[1, 2].map((i) => (
+        <div
+          key={i}
+          className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3"
+        >
+          <div className="flex items-center gap-2">
+            <Skeleton
+              variant="circular"
+              width={20}
+              height={20}
+              sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
+            />
+            <Skeleton
+              variant="text"
+              width={50}
+              sx={{ bgcolor: "rgba(255,255,255,0.05)" }}
+            />
+          </div>
+          <Skeleton
+            variant="text"
+            width="80%"
+            height={35}
+            sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
+          />
+          <Skeleton
+            variant="rounded"
+            width="100%"
+            height={6}
+            sx={{ bgcolor: "rgba(255,255,255,0.05)" }}
+          />
+        </div>
+      ))}
+    </div>
+
+    {/* Distribution Skeleton */}
+    <div className="bg-white/[0.05] border border-white/10 rounded-2xl p-4 space-y-4">
+      <div className="flex justify-between">
+        <Skeleton
+          variant="text"
+          width={100}
+          sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
+        />
+        <Skeleton
+          variant="circular"
+          width={16}
+          height={16}
+          sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
+        />
+      </div>
+      <div className="p-3 bg-white/[0.02] rounded-xl flex justify-between items-center">
+        <div className="space-y-1">
+          <Skeleton
+            variant="text"
+            width={60}
+            sx={{ bgcolor: "rgba(255,255,255,0.05)" }}
+          />
+          <Skeleton
+            variant="text"
+            width={90}
+            sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
+          />
+        </div>
+        <Skeleton
+          variant="rounded"
+          width={40}
+          height={30}
+          sx={{ bgcolor: "rgba(255,255,255,0.1)", borderRadius: "8px" }}
+        />
+      </div>
+    </div>
+
+    {/* Button Skeleton */}
+    <Skeleton
+      variant="rounded"
+      width="100%"
+      height={54}
+      sx={{ bgcolor: "rgba(255,255,255,0.05)", borderRadius: "16px" }}
+    />
+  </div>
+);
+
 export default function PrizeCardUI() {
   const { address } = useAccount();
 
@@ -41,8 +153,6 @@ export default function PrizeCardUI() {
   } | null>(null);
 
   const [loading, setLoading] = useState(true);
-
-  // State for showing/hiding rules popup
   const [showRules, setShowRules] = useState(false);
 
   const raffleRules = [
@@ -51,7 +161,7 @@ export default function PrizeCardUI() {
     "Winners will be selected randomly after event ends.",
     "Prize is 20,000 $FR",
     "Top 10 winners share the prize equally.",
-    "The price of Future $FR  is tied to the market value of Ethereum (ETH).",
+    "The price of Future $FR is tied to the market value of Ethereum (ETH).",
     "More $FR more rewards",
   ];
 
@@ -79,7 +189,6 @@ export default function PrizeCardUI() {
 
   const loadRaffleState = useCallback(async () => {
     if (!address) return;
-
     try {
       const res = await fetch(`/api/raffle/state?address=${address}`);
       if (!res.ok) throw new Error("Failed to load raffle state");
@@ -87,7 +196,7 @@ export default function PrizeCardUI() {
       setEntriesCount(data.entriesCount);
       setHasUserEntered(data.hasUserEntered);
     } catch {
-      // Ignore or set error if needed
+      // Ignore
     }
   }, [address]);
 
@@ -95,30 +204,53 @@ export default function PrizeCardUI() {
     loadRaffleState();
   }, [loadRaffleState]);
 
-  useEffect(() => {
-    if (timeLeft <= 0) return;
+  interface TimeLeft {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
 
-    const interval = setInterval(() => {
-      setTimeLeft((t) => (t <= 1000 ? 0 : t - 1000));
-    }, 1000);
+  function useCountdown(initialSeconds: number): TimeLeft {
+    const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
 
-    return () => clearInterval(interval);
-  }, [timeLeft]);
+    useEffect(() => {
+      let remaining = initialSeconds;
 
-  const formatTimeLeft = () => {
-    if (timeLeft <= 0) return "00d : 00h : 00m";
+      const calculateTimeLeft = (secs: number): TimeLeft => {
+        const days = Math.floor(secs / (24 * 3600));
+        secs %= 24 * 3600;
+        const hours = Math.floor(secs / 3600);
+        secs %= 3600;
+        const minutes = Math.floor(secs / 60);
+        const seconds = secs % 60;
+        return { days, hours, minutes, seconds };
+      };
 
-    const d = Math.floor(timeLeft / 86400000);
-    const h = Math.floor((timeLeft % 86400000) / 3600000);
-    const m = Math.floor((timeLeft % 3600000) / 60000);
-    const pad = (n: number) => n.toString().padStart(2, "0");
+      setTimeLeft(calculateTimeLeft(remaining));
 
-    return `${pad(d)}d : ${pad(h)}h : ${pad(m)}m`;
-  };
+      const interval = setInterval(() => {
+        remaining = remaining > 0 ? remaining - 1 : 0;
+        setTimeLeft(calculateTimeLeft(remaining));
+
+        if (remaining === 0) clearInterval(interval);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [initialSeconds]);
+
+    return timeLeft;
+  }
+
+  const { days, hours, minutes, seconds } = useCountdown(250000);
 
   useEffect(() => {
     if (!isConfirmed || !hash || !address || hasUserEntered) return;
-
     const postEntry = async () => {
       try {
         const res = await fetch("/api/raffle/enter", {
@@ -126,15 +258,12 @@ export default function PrizeCardUI() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ address, txHash: hash }),
         });
-
         const data = await res.json();
-
         if (!res.ok) {
           setErrorMsg(data.error || "Entry failed");
           setSuccessMsg("");
           return;
         }
-
         await loadRaffleState();
         setSuccessMsg(
           "Congratulations! You have successfully joined the event."
@@ -145,13 +274,11 @@ export default function PrizeCardUI() {
         setSuccessMsg("");
       }
     };
-
     postEntry();
   }, [isConfirmed, hash, address, hasUserEntered, loadRaffleState]);
 
   useEffect(() => {
     if (!error) return;
-
     if (error.message.includes("User rejected")) {
       setErrorMsg("Transaction rejected by user");
     } else {
@@ -168,10 +295,8 @@ export default function PrizeCardUI() {
       isConfirming
     )
       return;
-
     setErrorMsg("");
     setSuccessMsg("");
-
     writeContract({
       address: contractAddress as `0x${string}`,
       abi,
@@ -202,13 +327,11 @@ export default function PrizeCardUI() {
       });
   }, []);
 
+  // --- সুন্দর ভাবে ম্যানেজ করা লোডিং স্টেট ---
   if (loading) {
     return (
-      <div className="max-w-sm w-full p-5 space-y-6 bg-[#05080f]/80 backdrop-blur-xl rounded-[15px] border border-white/10 shadow-[0_0_50px_-12px_rgba(59,130,246,0.3)] relative overflow-hidden mx-auto">
-        <Skeleton variant="rectangular" height={40} className="mb-4" />
-        <Skeleton variant="rectangular" height={80} className="mb-4" />
-        <Skeleton variant="rectangular" height={100} className="mb-4" />
-        <Skeleton variant="rectangular" height={50} />
+      <div className="flex items-center justify-center px-3 py-10 min-h-[500px]">
+        <RaffleSkeleton />
       </div>
     );
   }
@@ -438,9 +561,9 @@ export default function PrizeCardUI() {
           {/* Time Left + View Rules Button */}
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-tighter">
-              <div className="flex items-center gap-1 text-red-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                {formatTimeLeft()}
+              <div className="flex items-center gap-1 text-[#ed2323]">
+                <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                {days} DAY : {hours} HOURS : {minutes} MIN
               </div>
               <div className="w-1 h-1 bg-white/10 rounded-full" />
 

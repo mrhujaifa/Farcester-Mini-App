@@ -6,10 +6,11 @@ import { Header } from "~/components/ui/Header";
 import { Footer } from "~/components/ui/Footer";
 import {
   HomeTab,
-  ActionsTab,
-  WalletTab,
+  QuestsTab,
   ProfileTab,
   MintTab,
+  RankTab,
+  SwapTab,
 } from "~/components/ui/tabs";
 import { USE_WALLET } from "~/lib/constants";
 import { useNeynarUser } from "../hooks/useNeynarUser";
@@ -18,9 +19,10 @@ import { Toaster } from "react-hot-toast";
 // --- Types ---
 export enum Tab {
   Home = "home",
-  Actions = "actions",
+  Quests = "quests",
   Mint = "mint",
-  Wallet = "wallet",
+  Rank = "rank",
+  Swap = "swap",
   Profile = "profile",
 }
 
@@ -113,9 +115,10 @@ export default function App({ title }: AppProps = { title: "FarRewards" }) {
 
         {/* Tab content rendering */}
         {currentTab === Tab.Home && <HomeTab />}
-        {currentTab === Tab.Actions && <ActionsTab />}
+        {currentTab === Tab.Quests && <QuestsTab />}
         {currentTab === Tab.Mint && <MintTab></MintTab>}
-        {currentTab === Tab.Wallet && <WalletTab />}
+        {currentTab === Tab.Rank && <RankTab />}
+        {currentTab === Tab.Swap && <SwapTab />}
         {currentTab === Tab.Profile && <ProfileTab />}
 
         {/* Footer with navigation */}

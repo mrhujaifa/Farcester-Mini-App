@@ -671,6 +671,9 @@ export default function PremiumVaultPage() {
           </div>
         )}
 
+        <p className="text-xs  text-cyan-300 tracking-wider">
+          Price: {MINT_PRICE} ETH
+        </p>
         <button
           onClick={opened ? closeVault : handleMint}
           disabled={isButtonDisabled()}

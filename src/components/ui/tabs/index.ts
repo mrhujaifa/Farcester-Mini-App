@@ -1,5 +1,6 @@
 export { HomeTab } from "./HomeTab";
-export { ActionsTab } from "./ActionsTab";
+export { QuestsTab } from "./QuestsTab";
 export { MintTab } from "./MintTab";
-export { WalletTab } from "./WalletTab";
+export { RankTab } from "./RankTab";
+export { SwapTab } from "./SwapTab";
 export { ProfileTab } from "./ProfileTab";
