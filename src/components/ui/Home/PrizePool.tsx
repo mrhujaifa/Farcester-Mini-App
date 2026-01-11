@@ -247,7 +247,7 @@ export default function PrizeCardUI() {
     return timeLeft;
   }
 
-  const { days, hours, minutes, seconds } = useCountdown(250000);
+  const { days, hours, minutes, seconds } = useCountdown(300000);
 
   useEffect(() => {
     if (!isConfirmed || !hash || !address || hasUserEntered) return;

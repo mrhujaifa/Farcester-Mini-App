@@ -1,10 +1,10 @@
 import React from "react";
-import QuestTask from "../Quests/QuestTask";
+import SpinSystem from "../Spin/SpinSystem";
 
 export function QuestsTab() {
   return (
     <div>
-      <QuestTask />
+      <SpinSystem />
     </div>
   );
 }

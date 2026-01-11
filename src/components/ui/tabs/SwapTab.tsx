@@ -1,145 +1,151 @@
-import { useState, useEffect } from "react";
-import {
-  Rocket,
-  Bell,
-  Twitter,
-  Disc as Discord,
-  Zap,
-  ArrowRightLeft,
-} from "lucide-react";
+import React, { useState } from "react";
+import { ChevronDown, Search, X, Check, Info, Lock } from "lucide-react"; // Lock icon add kora hoyeche
+import Image from "next/image";
 import { useMiniApp } from "@neynar/react";
 
-export function SwapTab() {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 5,
-    hours: 5,
-    mins: 45,
-    secs: 10,
+export const SwapTab = () => {
+  const [open, setOpen] = useState(false);
+  const [activeSide, setActiveSide] = useState<"sell" | "buy">("sell");
+
+  const [sellToken, setSellToken] = useState({
+    name: "Base Ethereum",
+    symbol: "ETH",
+    icon: "/base.png",
+    color: "bg-blue-600",
   });
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.secs > 0) return { ...prev, secs: prev.secs - 1 };
-        if (prev.mins > 0) return { ...prev, mins: 59, secs: 59 };
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const [buyToken, setBuyToken] = useState({
+    name: "Select token",
+    symbol: "",
+    icon: "",
+    color: "bg-gray-700",
+  });
+
+  const tokenList = [
+    {
+      name: "Base Ethereum",
+      symbol: "ETH",
+      icon: "/base.png",
+      color: "bg-blue-600",
+    },
+    {
+      name: "FarRewards",
+      symbol: "FR",
+      icon: "/icon.png",
+      color: "bg-purple-600",
+    },
+  ];
+
+  const handleOpenModal = (side: "sell" | "buy") => {
+    setActiveSide(side);
+    setOpen(true);
+  };
+
+  const selectToken = (token: any) => {
+    if (activeSide === "sell") setSellToken(token);
+    else setBuyToken(token);
+    setOpen(false);
+  };
 
   const { actions, added } = useMiniApp();
 
   return (
-    <div className="relative   flex items-center justify-center overflow-hidden font-sans text-white px-4 py-10">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-[-5%] left-[-5%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-600/30 rounded-full blur-[100px] md:blur-[150px] animate-pulse"></div>
-      <div className="absolute bottom-[-5%] right-[-5%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-blue-600/20 rounded-full blur-[100px] md:blur-[150px] animate-pulse delay-1000"></div>
+    <div className="relative flex items-center justify-center p-4 bg-[#010409] overflow-hidden ">
+      {/* Background Neon Glow */}
+      <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-[#FF007A]/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[120px]" />
 
-      {/* Floating Decorative Icons (Mobile Hidden for Cleanliness) */}
-      <div className="absolute hidden lg:block top-20 left-20 animate-bounce-slow opacity-20">
-        <Zap size={48} className="text-yellow-400" />
-      </div>
-      <div className="absolute hidden lg:block bottom-20 right-20 animate-bounce-slow opacity-20 delay-500">
-        <ArrowRightLeft size={48} className="text-blue-400" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-3xl flex flex-col items-center">
-        {/* Animated Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 mb-6 backdrop-blur-xl animate-fade-in">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-          </span>
-          <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] text-purple-300 uppercase">
-            System Protocol 2.0
-          </span>
-        </div>
-
-        {/* Hero Section */}
-        <h1 className="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-center leading-[1.1]">
-          <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500">
-            $FR to $DEGEN
-          </span>
-          <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-            Swap Protocol
-          </span>
-        </h1>
-
-        <p className="text-gray-400 text-sm md:text-lg max-w-lg mx-auto mb-10 text-center leading-relaxed px-4">
-          The next-gen liquidity bridge is almost here. Swap $FR for $DEGEN with
-          <span className="text-white font-semibold"> zero slippage</span>.
-        </p>
-
-        {/* Countdown Grid - Responsive Fix */}
-        <div className="grid grid-cols-4 gap-3 md:gap-6 mb-12 w-full max-w-md md:max-w-xl">
-          {[
-            { label: "Days", val: timeLeft.days },
-            { label: "Hrs", val: timeLeft.hours },
-            { label: "Mins", val: timeLeft.mins },
-            { label: "Secs", val: timeLeft.secs },
-          ].map((item, i) => (
-            <div key={i} className="group flex flex-col items-center">
-              <div className="w-full aspect-square bg-white/[0.03] border border-white/[0.08] rounded-xl md:rounded-2xl flex items-center justify-center backdrop-blur-md transition-all group-hover:border-purple-500/50 group-hover:bg-white/[0.06]">
-                <span className="text-xl md:text-4xl font-black font-mono bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
-                  {item.val < 10 ? `0${item.val}` : item.val}
-                </span>
-              </div>
-              <span className="text-[10px] uppercase tracking-widest mt-3 text-gray-500 font-bold group-hover:text-purple-400 transition-colors">
-                {item.label}
-              </span>
+      {/* Main Card */}
+      <div className="w-full max-w-[480px] bg-[#0d1117]/80 backdrop-blur-xl rounded-[32px] p-2 shadow-2xl border border-gray-800/50 relative z-10 overflow-hidden">
+        {/* --- COMING SOON OVERLAY --- */}
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#0d1117]/60 backdrop-blur-[6px] transition-all">
+          <div className="bg-[#161b22]/90 border border-gray-700/50 p-6 rounded-[28px] shadow-2xl flex flex-col items-center text-center scale-110">
+            <div className="w-16 h-16 bg-[#FF007A]/10 rounded-full flex items-center justify-center mb-4 border border-[#FF007A]/20">
+              <Lock className="text-[#FF007A]" size={28} />
             </div>
-          ))}
-        </div>
-
-        {/* Improved Call to Action */}
-        <div className="w-full max-w-sm md:max-w-md relative group px-4 md:px-0">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl blur-md opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-          <div className="relative flex flex-col md:flex-row gap-2 p-1.5 bg-[#0a0b14] border border-white/10 rounded-2xl overflow-hidden focus-within:border-purple-500/50 transition-all">
+            <h3 className="text-white text-2xl font-bold tracking-tight">
+              Coming Soon
+            </h3>
+            <p className="text-gray-400 text-sm mt-2 max-w-[200px]">
+              Our decentralized swap engine is under development. Tomorrow Swap
+              system Coming soon! <br />
+              $FR to $BaseETH
+            </p>
             <button
-              onClick={actions.addMiniApp}
               disabled={added}
-              className="bg-white text-black hover:bg-purple-500 hover:text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap"
+              onClick={actions.addMiniApp}
+              className="mt-6 px-6 cursor-pointer py-2 bg-[#FF007A] text-white text-xs font-bold rounded-full uppercase tracking-widest shadow-lg shadow-[#FF007A]/20"
             >
-              <Bell size={18} />
-              Get Access
+              Stay Tuned
             </button>
           </div>
         </div>
+
+        {/* Content (Blurred via Overlay) */}
+        <div className="flex items-center justify-between px-4 py-3">
+          <span className="text-white font-semibold text-lg opacity-90 tracking-tight">
+            Swap
+          </span>
+          <button className="p-2 hover:bg-gray-800 rounded-xl transition-all text-gray-400">
+            <Info size={20} />
+          </button>
+        </div>
+
+        <div className="relative mt-1 space-y-1">
+          {/* Sell Section */}
+          <div className="bg-[#161b22] rounded-[24px] p-5 border border-transparent">
+            <span className="text-gray-400 text-sm font-medium">You sell</span>
+            <div className="flex justify-between items-center gap-4 mt-2">
+              <input
+                type="text"
+                placeholder="0"
+                disabled
+                className="bg-transparent text-4xl outline-none w-full font-medium text-white"
+              />
+              <button className="flex items-center gap-2 bg-[#21262d] border border-gray-700 rounded-full py-1.5 pl-1.5 pr-3 text-white">
+                <div
+                  className={`w-7 h-7 ${sellToken.color} rounded-full overflow-hidden flex items-center justify-center`}
+                >
+                  <Image
+                    src={sellToken.icon}
+                    alt="token"
+                    width={28}
+                    height={28}
+                  />
+                </div>
+                <span className="font-bold text-lg">{sellToken.symbol}</span>
+                <ChevronDown size={18} className="text-gray-400" />
+              </button>
+            </div>
+          </div>
+
+          {/* Buy Section */}
+          <div className="bg-[#161b22] rounded-[24px] p-5 pt-7 border border-transparent">
+            <span className="text-gray-400 text-sm font-medium">You buy</span>
+            <div className="flex justify-between items-center mt-2 gap-4">
+              <input
+                type="text"
+                placeholder="0"
+                disabled
+                className="bg-transparent text-4xl outline-none w-full font-medium text-white"
+              />
+              <button className="bg-[#FF007A] py-2 px-4 text-white rounded-full flex items-center gap-2 font-bold uppercase text-sm">
+                Select token
+                <ChevronDown size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          disabled
+          className="w-full mt-2 bg-[#21262d] text-gray-500 font-bold py-4 rounded-[24px] border border-gray-800 text-lg"
+        >
+          Exchange
+        </button>
       </div>
 
-      {/* Noise Overaly for Texture */}
-      <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dztwwt9as/image/upload/v1646768827/noise_fuv0is.png')] opacity-[0.03] pointer-events-none"></div>
-
-      {/* Custom Styles for Animation */}
-      <style jsx>{`
-        @keyframes bounce-slow {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-        }
-        .animate-bounce-slow {
-          animation: bounce-slow 4s ease-in-out infinite;
-        }
-        .animate-fade-in {
-          animation: fadeIn 1s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+      {/* Token Modal logic remains same but won't be reachable while overlay is active */}
     </div>
   );
-}
+};

@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Home, UserRound, Scroll, Award, RefreshCw } from "lucide-react";
+import { Home, UserRound, Scroll, Award, RefreshCw, Disc } from "lucide-react";
 import { GiDiamondHard } from "react-icons/gi";
 
 import { Tab } from "~/components/App";
@@ -14,7 +14,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { id: Tab.Home, label: "Home", icon: Home },
-    { id: Tab.Quests, label: "Quests", icon: Scroll },
+    { id: Tab.Quests, label: "Spin", icon: Disc },
     { id: Tab.Mint, label: "Mint", icon: GiDiamondHard },
     { id: Tab.Swap, label: "Swap", icon: RefreshCw },
     { id: Tab.Rank, label: "Ranks", icon: Award },

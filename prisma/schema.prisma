@@ -10,13 +10,13 @@ generator client {
 }
 
 model Raffle {
-  id           String   @id @default(cuid())  // ডাইনামিক ইউনিক আইডি
+  id           String   @id @default(cuid()) // ডাইনামিক ইউনিক আইডি
   entriesCount Int      @default(0)
   maxEntries   Int      @default(100)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  entries      RaffleEntry[]
+  entries RaffleEntry[]
 }
 
 model RaffleEntry {
@@ -25,17 +25,24 @@ model RaffleEntry {
   txHash    String   @unique
   createdAt DateTime @default(now())
 
-  raffleId  String
-  raffle    Raffle   @relation(fields: [raffleId], references: [id])
+  raffleId String
+  raffle   Raffle @relation(fields: [raffleId], references: [id])
 
   @@unique([address, raffleId])
   @@index([address])
 }
 
-
 model User {
   id            String   @id @default(uuid())
+  username      String   @unique
+  fidID         String   @unique
   walletAddress String   @unique
+  totalRewards  Int      @default(0)
+  totalSpins    Int      @default(0)
+  balance       Int      @default(0)
+  updatedAt     DateTime @updatedAt
+  spins         Spin[]
+  rewards       Reward[]
   createdAt     DateTime @default(now())
   mints         Mint[]   @relation("UserMints")
 }
@@ -63,10 +70,29 @@ model Mint {
   @@index([timestamp])
 }
 
+model Spin {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardValue Int
+  isClaimed   Boolean   @default(false)
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
 
+  @@index([userId])
+}
 
+model Reward {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spinId      String
+  rewardValue Int
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
 
-
+  @@index([userId])
+}
 
 datasource db {
   provider = "postgresql"

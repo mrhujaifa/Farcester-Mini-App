@@ -26,8 +26,8 @@ import {
 import { parseEther } from "viem";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { abi } from "../../../../abi";
 import { base } from "viem/chains";
+import { MINT_ABI } from "../../../../abi";
 // import { baseSepolia } from "viem/chains";
 
 // --- Configuration ---
@@ -36,7 +36,7 @@ const NFT_CONTRACT_ADDRESS = "0x56a76F3ADe8b686B61f6aDbE53e0f5CAe77696a4"; // ma
 // const NFT_CONTRACT_ADDRESS = "0x3Da2ab5902593e6a9d55C6Ece4AFab1Cc3c7A2e2"; //testnet main ta
 const MINT_PRICE = "0.0001"; // ETH
 
-const NFT_ABI = abi;
+const NFT_ABI = MINT_ABI;
 
 // --- Toast Component ---
 const Toast = ({
@@ -375,7 +375,7 @@ export default function PremiumVaultPage() {
   // use can mint or not 24 hours
   const { data: isCanMint, isLoading: isCanMintLoading } = useReadContract({
     address: NFT_CONTRACT_ADDRESS,
-    abi: abi,
+    abi: MINT_ABI,
     functionName: "canMint",
     args: [address],
   });
@@ -384,7 +384,7 @@ export default function PremiumVaultPage() {
   const { data: timeUntilNextMint, isLoading: timeUntilNextMintLoading } =
     useReadContract({
       address: NFT_CONTRACT_ADDRESS,
-      abi: abi,
+      abi: MINT_ABI,
       functionName: "timeUntilNextMint",
       args: [address],
     });
