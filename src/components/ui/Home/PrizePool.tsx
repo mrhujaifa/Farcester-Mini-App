@@ -432,9 +432,6 @@ export default function PrizeCardUI() {
               <span className="text-[9px] font-bold text-amber-500 tracking-widest leading-none mt-1">
                 $FR TOKEN
               </span>
-              <span className="text-[10px] text-gray-500 mt-1">
-                ≈ $20.00 USDC
-              </span>
             </div>
           </motion.div>
         </div>
