@@ -19,6 +19,7 @@ import {
 import { useMiniApp } from "@neynar/react";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
+import AdminRoute from "~/app/admin/admin";
 
 export const ProfileTab = () => {
   const { context } = useMiniApp();
@@ -136,6 +137,8 @@ export const ProfileTab = () => {
               <p className="text-sm font-bold">Member</p>
             </div>
           </div>
+
+          <AdminRoute />
 
           {/* Daily Streak Card */}
           <div className="bg-white/[0.03] border border-white/5 rounded-[1.5rem] p-4 flex flex-col items-center justify-center gap-2 group hover:border-orange-500/30 transition-all">

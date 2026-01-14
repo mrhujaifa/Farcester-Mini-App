@@ -1,52 +1,96 @@
-import { MiniAppNotificationDetails } from '@farcaster/miniapp-sdk';
-import { Redis } from '@upstash/redis';
-import { APP_NAME } from './constants';
+import { MiniAppNotificationDetails } from "@farcaster/miniapp-sdk";
+import { Redis } from "@upstash/redis";
 
-// In-memory fallback storage
-const localStore = new Map<string, MiniAppNotificationDetails>();
+export const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
 
-// Use Redis if KV env vars are present, otherwise use in-memory
-const useRedis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
-const redis = useRedis
-  ? new Redis({
-      url: process.env.KV_REST_API_URL!,
-      token: process.env.KV_REST_API_TOKEN!,
-    })
-  : null;
+const KEY_PREFIX = "notification:";
 
 function getUserNotificationDetailsKey(fid: number): string {
-  return `${APP_NAME}:user:${fid}`;
+  return `${fid}`;
 }
 
 export async function getUserNotificationDetails(
   fid: number
 ): Promise<MiniAppNotificationDetails | null> {
-  const key = getUserNotificationDetailsKey(fid);
-  if (redis) {
-    return await redis.get<MiniAppNotificationDetails>(key);
-  }
-  return localStore.get(key) || null;
+  return await redis.get<MiniAppNotificationDetails>(
+    getUserNotificationDetailsKey(fid)
+  );
+}
+
+export async function getUsersNotificationDetails(): Promise<
+  MiniAppNotificationDetails[]
+> {
+  let cursor = "0";
+  const allUsers: MiniAppNotificationDetails[] = [];
+
+  do {
+    const [newCursor, keys] = await redis.scan(cursor, {
+      match: `*`,
+      count: 1000,
+    });
+    cursor = newCursor;
+
+    if (keys.length > 0) {
+      const details = (await redis.mget(
+        ...keys
+      )) as (MiniAppNotificationDetails | null)[];
+      allUsers.push(
+        ...details.filter((d): d is MiniAppNotificationDetails => d !== null)
+      );
+    }
+  } while (cursor !== "0");
+
+  return allUsers;
 }
 
 export async function setUserNotificationDetails(
   fid: number,
   notificationDetails: MiniAppNotificationDetails
 ): Promise<void> {
-  const key = getUserNotificationDetailsKey(fid);
-  if (redis) {
-    await redis.set(key, notificationDetails);
-  } else {
-    localStore.set(key, notificationDetails);
-  }
+  await redis.set(getUserNotificationDetailsKey(fid), notificationDetails);
 }
 
 export async function deleteUserNotificationDetails(
   fid: number
 ): Promise<void> {
-  const key = getUserNotificationDetailsKey(fid);
-  if (redis) {
-    await redis.del(key);
-  } else {
-    localStore.delete(key);
+  await redis.del(getUserNotificationDetailsKey(fid));
+}
+
+export async function removeInvalidNotificationTokens(
+  invalidTokens: string[]
+): Promise<void> {
+  if (!Array.isArray(invalidTokens) || invalidTokens.length === 0) {
+    return;
   }
+
+  const invalidTokenSet = new Set(invalidTokens);
+  const delPromises: Promise<number>[] = [];
+  let cursor = "0";
+
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: `${KEY_PREFIX}*`,
+      count: 1000,
+    });
+    cursor = nextCursor;
+
+    if (keys.length > 0) {
+      const details = (await redis.mget(...keys)) as ({
+        url: string;
+        token: string;
+      } | null)[];
+
+      keys.forEach((key, index) => {
+        const detail = details[index];
+        if (detail && invalidTokenSet.has(detail.token)) {
+          delPromises.push(redis.del(key));
+        }
+      });
+    }
+  } while (cursor !== "0");
+
+  await Promise.all(delPromises);
 }

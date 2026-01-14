@@ -151,3 +151,36 @@ export const SIGNED_KEY_REQUEST_TYPE = [
   { name: "key", type: "bytes" },
   { name: "deadline", type: "uint256" },
 ];
+
+export const notificationsBtn = [
+  {
+    id: 1,
+    name: "Daily Spin",
+    title: "🎰 Your Daily Spin Is Ready!",
+    body: "Claim your free spin now on FRRewards and win exciting prizes!",
+  },
+  {
+    id: 2,
+    name: "New Event",
+    title: "⚡ A New Event Has Started!",
+    body: "Join the latest FRRewards event and earn huge bonus rewards!",
+  },
+  {
+    id: 3,
+    name: "NFT Minting",
+    title: "🎨 Exclusive NFT Mint Is Live!",
+    body: "Mint your limited-edition FRRewards NFT before they run out!",
+  },
+  {
+    id: 4,
+    name: "Swap Alert",
+    title: "🔄 Swap Your FR Tokens Instantly!",
+    body: "Swap your FR tokens quickly and easily within FRRewards now!",
+  },
+  {
+    id: 5,
+    name: "Daily Claim",
+    title: "🎁 Claim Your Daily Reward!",
+    body: "Your daily FR reward is waiting. Open FRRewards and claim it now!",
+  },
+];
