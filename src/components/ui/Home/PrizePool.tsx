@@ -24,8 +24,7 @@ import Skeleton from "@mui/material/Skeleton";
 import userImg from "../../../../public/user.png";
 
 const MAX_ENTRIES = 100;
-const EVENT_DURATION_MS =
-  2 * 24 * 60 * 60 * 1000 + 14 * 60 * 60 * 1000 + 30 * 60 * 1000;
+const EVENT_DURATION_MS = 24 * 60 * 60 * 1000;
 
 /**
  * কাস্টম স্কেলিটন কম্পোনেন্ট - যা আপনার অরিজিনাল UI এর লেআউটকে হুবহু নকল করে
@@ -144,7 +143,12 @@ export default function PrizeCardUI() {
 
   const [entriesCount, setEntriesCount] = useState(0);
   const [hasUserEntered, setHasUserEntered] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(EVENT_DURATION_MS);
+  const [timeLeft, setTimeLeft] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [Alldata, setAllData] = useState<{
@@ -159,9 +163,9 @@ export default function PrizeCardUI() {
     "Each wallet can enter only once.",
     "Maximum 100 entries allowed in total.",
     "Winners will be selected randomly after event ends.",
-    "Prize is 20,000 $FR",
+    "Prize is 10,000 $FR",
     "Top 10 winners share the prize equally.",
-    "The price of Future $FR is tied to the market value of Ethereum (ETH).",
+    "The price of Future $FR is tied to the market value of $USDT.",
     "More $FR more rewards",
   ];
 
@@ -204,50 +208,30 @@ export default function PrizeCardUI() {
     loadRaffleState();
   }, [loadRaffleState]);
 
-  interface TimeLeft {
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  }
+  // Fixed countdown timer
+  useEffect(() => {
+    let remaining = EVENT_DURATION_MS;
 
-  function useCountdown(initialSeconds: number): TimeLeft {
-    const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-    });
+    const calculateTimeLeft = (ms: number) => {
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / (24 * 3600));
+      const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return { days, hours, minutes, seconds };
+    };
 
-    useEffect(() => {
-      let remaining = initialSeconds;
+    setTimeLeft(calculateTimeLeft(remaining));
 
-      const calculateTimeLeft = (secs: number): TimeLeft => {
-        const days = Math.floor(secs / (24 * 3600));
-        secs %= 24 * 3600;
-        const hours = Math.floor(secs / 3600);
-        secs %= 3600;
-        const minutes = Math.floor(secs / 60);
-        const seconds = secs % 60;
-        return { days, hours, minutes, seconds };
-      };
-
+    const interval = setInterval(() => {
+      remaining = remaining > 0 ? remaining - 1000 : 0;
       setTimeLeft(calculateTimeLeft(remaining));
 
-      const interval = setInterval(() => {
-        remaining = remaining > 0 ? remaining - 1 : 0;
-        setTimeLeft(calculateTimeLeft(remaining));
+      if (remaining === 0) clearInterval(interval);
+    }, 1000);
 
-        if (remaining === 0) clearInterval(interval);
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }, [initialSeconds]);
-
-    return timeLeft;
-  }
-
-  const { days, hours, minutes, seconds } = useCountdown(300000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (!isConfirmed || !hash || !address || hasUserEntered) return;
@@ -351,13 +335,21 @@ export default function PrizeCardUI() {
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 blur-[60px] rounded-full animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full"></div>
 
-        {/* Header */}
+        {/* Header with LIVE Badge */}
         <div className="flex justify-between items-center relative z-10">
-          <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-1.5">
-            <Zap size={12} className="text-blue-400 fill-blue-400" />
-            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-tighter">
-              High Yield Raffle
-            </span>
+          <div className="flex items-center gap-2">
+            <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-1.5">
+              <Zap size={12} className="text-blue-400 fill-blue-400" />
+              <span className="text-[10px] font-bold text-blue-400 uppercase tracking-tighter">
+                High Yield Raffle
+              </span>
+            </div>
+            <div className="px-3 py-1 bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/40 rounded-full flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter">
+                Live
+              </span>
+            </div>
           </div>
           <div className="flex -space-x-2 items-center">
             {[1, 2, 3].map((i) => (
@@ -428,7 +420,7 @@ export default function PrizeCardUI() {
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black text-white">20,000</span>
+              <span className="text-2xl font-black text-white">10,000</span>
               <span className="text-[9px] font-bold text-amber-500 tracking-widest leading-none mt-1">
                 $FR TOKEN
               </span>
@@ -454,7 +446,7 @@ export default function PrizeCardUI() {
                   Top 10 Winners
                 </p>
                 <p className="text-sm font-bold text-white">
-                  2,000 $FR{" "}
+                  1,000 $FR{" "}
                   <span className="text-gray-500 font-medium text-[10px]">
                     each
                   </span>
@@ -560,7 +552,10 @@ export default function PrizeCardUI() {
             <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-tighter">
               <div className="flex items-center gap-1 text-[#ed2323]">
                 <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-                {days} DAY : {hours} HOURS : {minutes} MIN
+                {timeLeft.days > 0 && `${timeLeft.days} DAY : `}
+                {String(timeLeft.hours).padStart(2, "0")} HOURS :{" "}
+                {String(timeLeft.minutes).padStart(2, "0")} MIN :{" "}
+                {String(timeLeft.seconds).padStart(2, "0")} SEC
               </div>
               <div className="w-1 h-1 bg-white/10 rounded-full" />
 

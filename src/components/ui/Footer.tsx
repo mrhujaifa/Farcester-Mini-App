@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 px-3 pb-4 z-50">
+    <div className="fixed bottom-0 left-0 right-0 px-3  z-50">
       <div className="max-w-md mx-auto bg-[#0b0a11] border border-white/10 rounded-[15px] p-2 flex items-center justify-around shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;

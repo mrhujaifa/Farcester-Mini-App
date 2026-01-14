@@ -9,6 +9,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import { REWAED_CLAIM_ABI } from "../../../../abi";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useMiniApp } from "@neynar/react";
 
 // --- Types ---
 interface Reward {
@@ -40,6 +41,7 @@ const SpinSystem: React.FC = () => {
   const controls = useAnimation();
   const { isConnected, address: userAddress } = useAccount();
   const { writeContractAsync } = useWriteContract();
+  const { actions } = useMiniApp();
 
   const MAX_DAILY_SPINS = 5;
 
@@ -161,6 +163,14 @@ const SpinSystem: React.FC = () => {
       });
 
       setShowPopup(false);
+
+      await actions.composeCast({
+        text: `🎉 Woohoo! I just won ${reward?.label} from the spin system!\n
+✨ Daily rewards, instant spins, exciting events,\n
+🎨 NFT drops, and seamless swaps system await you!`,
+        embeds: ["https://farcaster.xyz/miniapps/kaThIXNoQonz/farrewards"],
+      });
+
       return hash;
     })();
 
