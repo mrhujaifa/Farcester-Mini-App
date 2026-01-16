@@ -43,8 +43,8 @@ importers:
         specifier: ^0.1.12
         version: 0.1.12(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@farcaster/mini-app-solana':
-        specifier: '>=0.0.17 <1.0.0'
-        version: 0.0.20(@farcaster/frame-sdk@0.1.12(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/wallet-adapter-react@0.15.39(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.1(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.1.0)(react@19.2.3)(utf-8-validate@5.0.10))(react@19.2.3)(typescript@5.9.3))(bufferutil@4.1.0)(react@19.2.3)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: '>=0.0.17 <2.0.0'
+        version: 1.1.1(@farcaster/miniapp-sdk@0.2.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/wallet-adapter-react@0.15.39(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.1(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.1.0)(react@19.2.3)(utf-8-validate@5.0.10))(react@19.2.3)(typescript@5.9.3))(bufferutil@4.1.0)(react@19.2.3)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@farcaster/miniapp-core':
         specifier: ^0.4.1
         version: 0.4.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -730,17 +730,15 @@ packages:
       react: '>= 17'
       react-dom: '>= 17'
 
-  '@farcaster/frame-core@0.2.0':
-    resolution: {integrity: sha512-HNxg7A4p5W/HqMMs6CKKJXbhHFpLYrlcOGlvc9k9tRiGBSo8JjAZhyjVUfaXqSIvN0ItCGBVmtB0ULzpktMpTA==}
-
   '@farcaster/frame-sdk@0.1.12':
     resolution: {integrity: sha512-qlikvkxsrsvKGutr3PM3Yvsuni2Fku15aPagrCyHZWbYAJrZ4mRJM6u9S8eLAXMMnYd9gJ9yor6COYgmZMBOgQ==}
     engines: {node: '>=22.11.0'}
 
-  '@farcaster/mini-app-solana@0.0.20':
-    resolution: {integrity: sha512-D452PAm+pH0IdarMfiMGdOvYUhmESwGMWgEjLtoKsCUr+bJyXenNb87BGdqShiTYkZV+0qoCNX+LsSHI+GiBYw==}
+  '@farcaster/mini-app-solana@1.1.1':
+    resolution: {integrity: sha512-o0xqnzbQe+GIDdRtIkuXCD50z01JuFlbNAHsBBNDLf2QYaRzSYIS2duGSEmvpLsr7vxBNF2E9zBzsOfk7bAeEg==}
+    engines: {node: '>=22.11.0'}
     peerDependencies:
-      '@farcaster/frame-sdk': '>=0.0.64'
+      '@farcaster/miniapp-sdk': '>=0.2.1'
       '@solana/wallet-adapter-base': '>=0.9.0'
       '@solana/wallet-adapter-react': '>=0.15.0'
       react: '>=18.0.0'
@@ -7561,17 +7559,6 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@farcaster/frame-core@0.2.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      ox: 0.4.4(typescript@5.9.3)(zod@3.25.76)
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-
   '@farcaster/frame-sdk@0.1.12(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
       '@farcaster/miniapp-sdk': 0.2.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
@@ -7586,10 +7573,10 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@farcaster/mini-app-solana@0.0.20(@farcaster/frame-sdk@0.1.12(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/wallet-adapter-react@0.15.39(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.1(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.1.0)(react@19.2.3)(utf-8-validate@5.0.10))(react@19.2.3)(typescript@5.9.3))(bufferutil@4.1.0)(react@19.2.3)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@farcaster/mini-app-solana@1.1.1(@farcaster/miniapp-sdk@0.2.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/wallet-adapter-react@0.15.39(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.1(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.1.0)(react@19.2.3)(utf-8-validate@5.0.10))(react@19.2.3)(typescript@5.9.3))(bufferutil@4.1.0)(react@19.2.3)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
-      '@farcaster/frame-core': 0.2.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@farcaster/frame-sdk': 0.1.12(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@farcaster/miniapp-core': 0.4.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@farcaster/miniapp-sdk': 0.2.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@scure/base': 1.2.6
       '@solana/wallet-adapter-base': 0.9.27(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))
       '@solana/wallet-adapter-react': 0.15.39(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.1(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.1.0)(react@19.2.3)(utf-8-validate@5.0.10))(react@19.2.3)(typescript@5.9.3)
@@ -8178,7 +8165,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
       '@types/debug': 4.1.12
-      debug: 4.3.4
+      debug: 4.4.3
       pony-cause: 2.1.11
       semver: 7.7.3
       uuid: 9.0.1
